@@ -73,3 +73,48 @@ public class Movement : MonoBehaviour
 
 }
 
+
+
+
+Maybe works
+
+gdscript
+
+extends KinematicBody2D
+
+# Exports
+export var speed: float = 200.0
+export (enum) var movement_type = "AllDirections"
+enum MovementType {
+    AllDirections,
+    HorizontalOnly,
+    VerticalOnly
+}
+
+export var platform_settings: bool = false
+
+var master_speed: float
+
+func _ready():
+    master_speed = speed
+
+func _physics_process(delta):
+    var horizontal = Input.get_action_strength("ui_right") - Input.get_action_strength("ui_left")
+    var vertical = Input.get_action_strength("ui_down") - Input.get_action_strength("ui_up")
+
+    if platform_settings:
+        var vertical_movement = get_slide_collision().normal.y
+        if vertical_movement != 0:
+            speed = master_speed / 3
+        else:
+            speed = master_speed
+
+    match movement_type:
+        MovementType.HorizontalOnly:
+            vertical = 0
+        MovementType.VerticalOnly:
+            horizontal = 0
+
+    var movement = Vector2(horizontal, vertical)
+    move_and_slide(movement.normalized() * speed * delta)
+lets assumes you've set up your input actions to use "ui_left", "ui_right", "ui_up", and "ui_down" for movement. Make sure your input map is set up accordingly. 
